@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grupos Para Preparar</title>
+    <style>
+        :root {
+            --bg-color: #f2f2f7;
+            --card-bg: #ffffff;
+            --accent-color: #007aff;
+            --whatsapp-color: #25d366;
+            --text-color: #1c1c1e;
+            --border-radius: 12px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 16px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 1.6rem;
+            margin-bottom: 20px;
+        }
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 16px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin-bottom: 16px;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 14px;
+            color: var(--accent-color);
+            border-bottom: 2px solid var(--bg-color);
+            padding-bottom: 6px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+        }
+
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d1d6;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 0.95rem;
+            margin-bottom: 12px;
+        }
+
+        button {
+            width: 100%;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .group-card {
+            background-color: var(--card-bg);
+            border-left: 5px solid var(--accent-color);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+
+        .palabra-card {
+            border-left-color: #34c759;
+            background-color: #eafceb;
+        }
+
+        details.mensaje-details {
+            background-color: var(--card-bg);
+            border-left: 4px solid var(--accent-color);
+            border: 1px solid #e5e5ea;
+            border-left-width: 4px;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        summary {
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            color: var(--accent-color);
+            outline: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-whatsapp-icon {
+            background-color: var(--whatsapp-color);
+            color: white;
+            text-decoration: none;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: transform 0.2s, background-color 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+        }
+
+        .btn-whatsapp-icon:hover {
+            background-color: #1ebc57;
+            transform: scale(1.08);
+        }
+
+        .mensaje-contenido {
+            margin-top: 10px;
+            white-space: pre-wrap;
+            font-family: inherit;
+            background-color: #f9f9fb;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #e5e5ea;
+        }
+
+        .group-title {
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Grupos Para Preparar</h1>
+
+    <div class="grid-layout">
+        <!-- CUADRANTE 1: GENERADOR DE GRUPOS -->
+        <div>
+            <div class="card">
+                <div class="card-title">Generador de Grupos</div>
+
+                <label for="numGrupos">Número de grupos:</label>
+                <!-- Se ha modificado value="3" por value="6" -->
+                <input type="number" id="numGrupos" value="6" min="1">
+            </div>
+
+            <div id="resultadosGrupos"></div>
+        </div>
+
+        <!-- CUADRANTE 2: GENERADOR DE MENSAJES -->
+        <div>
+            <div class="card">
+                <div class="card-title">Generador de Mensajes</div>
+
+                <label for="msgTitulo">Título:</label>
+                <input type="text" id="msgTitulo" placeholder="Ej. Abraham">
+
+                <label for="msgCapitulos">Capítulos:</label>
+                <input type="text" id="msgCapitulos" placeholder="Ej. 14, 15 y 16">
+
+                <button onclick="generarTodo()">Generar Grupos y Mensajes</button>
+            </div>
+
+            <div id="resultadosMensajes"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // =========================================================================
+    // CONFIGURACIÓN DE NOMBRES Y PAREJAS
+    // =========================================================================
+    const LISTA_VIENEN_MUCHO = ["Damián", "Emma", "Belén", "José", "Celia", "Álvaro C", "Marta Escrig", "Álvaro G", "Gemma", "Toni", "Paloma P", "Carmela", "Mario", "Juan Carlos", "María Díaz", "Laura", "Edu", "Lorena", "Javi", "María Pascual", "Natalia", "Paloma B", "Rut", "Juan M", "Loreto", "Teresa Cabrera", "Esther", "Héctor", "Henar", "Inés", "Tino", "Ángela", "Carlos R", "Luis Ramos"];
+    const LISTA_VIENEN_POCO = ["Quico", "Israel", "Danna", "Santiago J", "Mónica", "Marina", "Luis", "Guiomar", "Efraím", "Juan González", "Pablo", "Puri", "Charlie", "Sara B", "Jesús", "Jaime"];
+    const PAREJAS_INSEPARABLES = [
+        ["Damián", "Emma"], 
+        ["Belén", "José"], 
+        ["Celia", "Álvaro C"], 
+        ["Álvaro G", "Gemma"], 
+        ["Toni", "Paloma P"], 
+        ["Laura", "Edu"], 
+        ["Lorena", "Javi"], 
+        ["Juan M", "Loreto"], 
+        ["Israel", "Danna"], 
+        ["Marina", "Luis"], 
+        ["Guiomar", "Efraím"]
+    ];
+
+    function mezclarArreglo(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
+
+    function formatearIntegrantesGrupo(listaPersonas) {
+        let elementosFormateados = [];
+        let procesados = new Set();
+
+        PAREJAS_INSEPARABLES.forEach(pareja => {
+            let [p1, p2] = pareja;
+            if (listaPersonas.includes(p1) && listaPersonas.includes(p2)) {
+                elementosFormateados.push(`${p1} y ${p2}`);
+                procesados.add(p1);
+                procesados.add(p2);
+            }
+        });
+
+        listaPersonas.forEach(persona => {
+            if (!procesados.has(persona)) {
+                elementosFormateados.push(persona);
+            }
+        });
+
+        mezclarArreglo(elementosFormateados);
+        return elementosFormateados.join(', ');
+    }
+
+    function obtenerParejaDe(nombre) {
+        for (let pareja of PAREJAS_INSEPARABLES) {
+            if (pareja[0] === nombre) return pareja[1];
+            if (pareja[1] === nombre) return pareja[0];
+        }
+        return null;
+    }
+
+    function generarTodo() {
+        const numGrupos = parseInt(document.getElementById('numGrupos').value);
+        if (isNaN(numGrupos) || numGrupos <= 0) {
+            alert("Por favor, introduce un número de grupos válido.");
+            return;
+        }
+
+        let mucho = [...LISTA_VIENEN_MUCHO];
+        let poco = [...LISTA_VIENEN_POCO];
+        let parejas = PAREJAS_INSEPARABLES.map(p => [...p]);
+
+        const titulo = document.getElementById('msgTitulo').value.trim();
+        const capitulos = document.getElementById('msgCapitulos').value.trim();
+
+        parejas.forEach(pareja => {
+            pareja.forEach(persona => {
+                mucho = mucho.filter(p => p !== persona);
+                poco = poco.filter(p => p !== persona);
+            });
+        });
+
+        mezclarArreglo(mucho);
+        mezclarArreglo(poco);
+
+        let unidades = [];
+        let i = 0, j = 0;
+        while (i < mucho.length || j < poco.length) {
+            if (i < mucho.length) { unidades.push([mucho[i]]); i++; }
+            if (j < poco.length) { unidades.push([poco[j]]); j++; }
+        }
+
+        parejas.forEach(p => unidades.push(p));
+        mezclarArreglo(unidades);
+
+        let grupos = Array.from({ length: numGrupos }, () => []);
+        unidades.forEach(unidad => {
+            let grupoDestino = grupos.reduce((min, g) => g.length < min.length ? g : min, grupos[0]);
+            grupoDestino.push(...unidad);
+        });
+
+        let grupoPalabra = [];
+        let yaRepresentados = new Set();
+
+        let indicesGrupos = grupos.map((_, idx) => idx);
+        mezclarArreglo(indicesGrupos);
+
+        indicesGrupos.forEach(idx => {
+            if (yaRepresentados.has(idx)) return;
+
+            let grupoActual = [...grupos[idx]];
+            mezclarArreglo(grupoActual);
+
+            let personaElegida = grupoActual[0];
+            let pareja = obtenerParejaDe(personaElegida);
+
+            if (pareja) {
+                grupoPalabra.push(personaElegida, pareja);
+                yaRepresentados.add(idx);
+
+                grupos.forEach((g, gIdx) => {
+                    if (g.includes(pareja)) {
+                        yaRepresentados.add(gIdx);
+                    }
+                });
+            } else {
+                grupoPalabra.push(personaElegida);
+                yaRepresentados.add(idx);
+            }
+        });
+
+        let contenedorGrupos = document.getElementById('resultadosGrupos');
+        contenedorGrupos.innerHTML = '';
+
+        grupos.forEach((g, idx) => {
+            let textoIntegrantes = formatearIntegrantesGrupo(g);
+            contenedorGrupos.innerHTML += `
+                <div class="group-card">
+                    <div class="group-title">Grupo ${idx + 1} (${g.length} pers.)</div>
+                    <div>${textoIntegrantes}</div>
+                </div>`;
+        });
+
+        let textoPalabra = formatearIntegrantesGrupo(grupoPalabra);
+        contenedorGrupos.innerHTML += `
+            <div class="group-card palabra-card">
+                <div class="group-title">GRUPO PALABRA (${grupoPalabra.length} pers.)</div>
+                <div>${textoPalabra}</div>
+            </div>`;
+
+        let contenedorMensajes = document.getElementById('resultadosMensajes');
+        contenedorMensajes.innerHTML = '';
+
+        grupos.forEach((g, idx) => {
+            let textoIntegrantes = formatearIntegrantesGrupo(g);
+            let textoMensaje = `Buenas hermano/a, te he nombrado responsable del grupo para la figura de las casas. 
+
+Tendrás que reunir a tu grupo para quedar el próximo martes en casa de algún hermano y celebrar la figura correspondiente tal y como lo hemos estado haciendo.
+
+Cualquier duda me preguntas, gracias!
+
+ ${titulo} 
+Capitulos ${capitulos},
+ 
+Celebración Figura en casas:
+
+(Llevar biblia, papel y boli)
+
+1. Oración inicial
+
+2. Invocación del espíritu Santo 
+
+3. Proclamar lectura
+
+4. Escrutar: con los paralelos (30min)
+
+5. Responder a las Preguntas:  ¿Cómo se cumple esta figura en Jesucristo y como se cumple en ti?
+
+6. Peticiones
+
+7. Padre nuestro 
+
+8. Paz 
+
+9. Bendición Final
+
+\n\nGrupo ${idx + 1}: ${textoIntegrantes}`;
+            
+            let urlWhatsApp = `https://api.whatsapp.com/send?text=${encodeURIComponent(textoMensaje)}`;
+
+            contenedorMensajes.innerHTML += `
+                <details class="mensaje-details">
+                    <summary>
+                        <span>Mensaje Grupo ${idx + 1}</span>
+                        <a href="${urlWhatsApp}" target="_blank" class="btn-whatsapp-icon" title="Enviar por WhatsApp" onclick="event.stopPropagation();">
+                            💬
+                        </a>
+                    </summary>
+                    <div class="mensaje-contenido">${textoMensaje}</div>
+                </details>`;
+        });
+    }
+</script>
+
+</body>
+</html>
